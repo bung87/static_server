@@ -19,7 +19,7 @@ description   = pkgDescription
 license       = "MIT"
 bin           = @["nimhttpd"]
 srcDir        = "src"
-installExt    = @["nim"]
+installExt    = @["nim","css"]
 
 # Dependencies
 
