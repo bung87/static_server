@@ -143,7 +143,9 @@ proc serve*(settings: NimHttpSettings) =
   var server = newAsyncHttpServer()
   proc handleHttpRequest(req: Request): Future[void] {.async.} =
     printReqInfo(settings, req)
-    let path = req.url.path.replace("%20", " ").decodeUrl()
+    var path = req.url.path.replace("%20", " ").decodeUrl()
+    if len(path) <= 1:
+      path = (path / "index.html").normalizedPath
     var res: NimHttpResponse 
     if req.reqMethod != HttpGet:
       res = sendNotImplemented(settings, path)
