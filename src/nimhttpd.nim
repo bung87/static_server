@@ -145,7 +145,6 @@ proc serve*(settings: NimHttpSettings) =
   proc handleHttpRequest(req: Request): Future[void] {.async.} =
     printReqInfo(settings, req)
     var path = req.url.path.replace("%20", " ").decodeUrl()
-    echo path,111
     if len(path) <= 1:
       path = (path / "index.html")
     let stripedPath = path.strip(leading=true,trailing=false,chars={'/'})
