@@ -6,7 +6,8 @@ import
   times, 
   parseopt,
   strutils,
-  uri
+  uri,
+  strformat
 
 from httpcore import HttpMethod, HttpHeaders
 
@@ -144,15 +145,19 @@ proc serve*(settings: NimHttpSettings) =
   proc handleHttpRequest(req: Request): Future[void] {.async.} =
     printReqInfo(settings, req)
     var path = req.url.path.replace("%20", " ").decodeUrl()
+    echo path,111
     if len(path) <= 1:
-      path = (path / "index.html").normalizedPath
+      path = (path / "index.html")
+    let stripedPath = path.strip(leading=true,trailing=false,chars={'/'})
     var res: NimHttpResponse 
     if req.reqMethod != HttpGet:
       res = sendNotImplemented(settings, path)
     else:
+      if settings.logging:
+        echo &"get content by path:{stripedPath}" 
       try:
-        let content = settings.finder.get(path)
-        res = sendStaticFile(settings,path,content)
+        let content = settings.finder.get(stripedPath)
+        res = sendStaticFile(settings,stripedPath,content)
       except:
         res = sendNotFound(settings, path)
     await req.respond(res.code, res.content, res.headers)
