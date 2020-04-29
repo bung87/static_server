@@ -34,7 +34,7 @@ let usage = """ $1 v$2 - $3
     -p, --port     The port to listen to (default: 1337).
     -a, --address  The address to listen to (default: 127.0.0.1).
 """ % [name, version, description, author]
-
+import finder
 
 type 
   NimHttpResponse* = tuple[
@@ -43,7 +43,7 @@ type
     headers: HttpHeaders]
   NimHttpSettings* = object
     logging*: bool
-    directory*: string
+    finder*: Finder
     mimes*: MimeDb
     port*: Port
     address*: string
@@ -96,28 +96,26 @@ proc sendNotImplemented(settings: NimHttpSettings, path: string): NimHttpRespons
   var content = "<p>This server does not support the functionality required to fulfill the request.</p>"
   return (code: Http501, content: h_page(settings, content, $Http501), headers: newHttpHeaders())
 
-proc sendStaticFile(settings: NimHttpSettings, path: string): NimHttpResponse =
+proc sendStaticFile(settings: NimHttpSettings,path:string, content: string): NimHttpResponse =
   let mimes = settings.mimes
   var ext = path.splitFile.ext
   if ext == "":
     ext = ".txt"
   ext = ext[1 .. ^1]
   let mimetype = mimes.getMimetype(ext.toLowerAscii)
-  var file = path.readFile
-  return (code: Http200, content: file, headers: {"Content-Type": mimetype}.newHttpHeaders)
+  return (code: Http200, content: content, headers: {"Content-Type": mimetype}.newHttpHeaders)
 
 proc sendDirContents(settings: NimHttpSettings, path: string): NimHttpResponse = 
-  let cwd = settings.directory
   var res: NimHttpResponse
   var files = newSeq[string](0)
-  if path != cwd and path != cwd&"/" and path != cwd&"\\":
-    files.add """<li class="i-back entypo"><a href="$1">..</a></li>""" % [path.relativeParent(cwd)]
-  var title = "Index of " & path.relativePath(cwd)
+  if path != "/" and path != "\\":
+    files.add """<li class="i-back entypo"><a href="$1">..</a></li>""" % [path]
+  var title = "Index of " & path
   for i in walkDir(path):
     let name = i.path.extractFilename
-    let relpath = i.path.relativePath(cwd)
+    let relpath = i.path
     if name == "index.html" or name == "index.htm":
-      return sendStaticFile(settings, i.path)
+      return sendStaticFile(settings, i.path, i.path.readFile())
     if i.path.existsDir:
       files.add """<li class="i-folder entypo"><a href="$1">$2</a></li>""" % [relpath, name]
     else:
@@ -145,19 +143,18 @@ proc serve*(settings: NimHttpSettings) =
   var server = newAsyncHttpServer()
   proc handleHttpRequest(req: Request): Future[void] {.async.} =
     printReqInfo(settings, req)
-    let path = settings.directory/req.url.path.replace("%20", " ").decodeUrl()
+    let path = req.url.path.replace("%20", " ").decodeUrl()
     var res: NimHttpResponse 
     if req.reqMethod != HttpGet:
       res = sendNotImplemented(settings, path)
-    elif path.existsDir:
-      res = sendDirContents(settings, path)
-    elif path.existsFile:
-      res = sendStaticFile(settings, path)
     else:
-      res = sendNotFound(settings, path)
+      try:
+        let content = settings.finder.get(path)
+        res = sendStaticFile(settings,path,content)
+      except:
+        res = sendNotFound(settings, path)
     await req.respond(res.code, res.content, res.headers)
   echo settings.name, " v", settings.version, " started on port ", int(settings.port), "." 
-  echo "Serving directory ", settings.directory
   asyncCheck server.serve(settings.port, handleHttpRequest, settings.address)
 
 when isMainModule:
@@ -208,7 +205,8 @@ when isMainModule:
       discard
   
   var settings: NimHttpSettings
-  settings.directory = www
+  settings.finder = Finder(fType:FinderType.fs)
+  initFinder(settings.finder,www)
   settings.logging = logging
   settings.mimes = newMimeTypes()
   settings.mimes.register("htm", "text/html")

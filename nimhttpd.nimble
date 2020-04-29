@@ -23,7 +23,8 @@ installExt    = @["nim","css"]
 
 # Dependencies
 
-requires "nim >= 0.20.0"
+requires "nim >= 1.2.0"
+requires "https://github.com/bung87/finder"
 
 const compile = "nim c -d:release"
 const linux_x64 = "--cpu:amd64 --os:linux -o:nimhttpd"
