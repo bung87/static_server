@@ -12,7 +12,7 @@ import
 from httpcore import HttpMethod, HttpHeaders
 
 import
-  nimhttpdpkg/config
+  static_serverpkg/config
 
 
 const 
@@ -26,7 +26,7 @@ let usage = """ $1 v$2 - $3
   (c) 2014-2018 $4
 
   Usage:
-    nimhttpd [-p:port] [directory]
+    static_server [-p:port] [directory]
 
   Arguments:
     directory      The directory to serve (default: current directory).
@@ -82,13 +82,6 @@ proc relativePath(path, cwd: string): string =
     relpath = "/"&relpath
   return relpath
 
-proc relativeParent(path, cwd: string): string =
-  var relparent = path.parentDir.relativePath(cwd)
-  if relparent == "":
-    return "/"
-  else: 
-    return relparent
-
 proc sendNotFound(settings: NimHttpSettings, path: string): NimHttpResponse = 
   var content = "<p>The page you requested cannot be found.<p>"
   return (code: Http404, content: h_page(settings, content, $Http404), headers: newHttpHeaders())
@@ -106,28 +99,6 @@ proc sendStaticFile(settings: NimHttpSettings,path:string, content: string): Nim
   let mimetype = mimes.getMimetype(ext.toLowerAscii)
   return (code: Http200, content: content, headers: {"Content-Type": mimetype}.newHttpHeaders)
 
-proc sendDirContents(settings: NimHttpSettings, path: string): NimHttpResponse = 
-  var res: NimHttpResponse
-  var files = newSeq[string](0)
-  if path != "/" and path != "\\":
-    files.add """<li class="i-back entypo"><a href="$1">..</a></li>""" % [path]
-  var title = "Index of " & path
-  for i in walkDir(path):
-    let name = i.path.extractFilename
-    let relpath = i.path
-    if name == "index.html" or name == "index.htm":
-      return sendStaticFile(settings, i.path, i.path.readFile())
-    if i.path.existsDir:
-      files.add """<li class="i-folder entypo"><a href="$1">$2</a></li>""" % [relpath, name]
-    else:
-      files.add """<li class="i-file entypo"><a href="$1">$2</a></li>""" % [relpath, name]
-  let ul = """
-<ul>
-  $1
-</ul>
-""" % [files.join("\n")]
-  res = (code: Http200, content: h_page(settings, ul, title), headers: newHttpHeaders())
-  return res
 
 proc printReqInfo(settings: NimHttpSettings, req: Request) =
   if not settings.logging:

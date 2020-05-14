@@ -1,15 +1,15 @@
-[![Nimble](https://raw.githubusercontent.com/yglukhov/nimble-tag/master/nimble.png)](https://github.com/h3rald/nimhttpd)
+[![Nimble](https://raw.githubusercontent.com/yglukhov/nimble-tag/master/nimble.png)](https://github.com/bung87/nimhttpd)
 
-![release](https://img.shields.io/github/release/h3rald/nimhttpd/all.svg)
-![license](https://img.shields.io/github/license/h3rald/nimhttpd.svg)
+![release](https://img.shields.io/github/release/bung87/nimhttpd/all.svg)
+![license](https://img.shields.io/github/license/bung87/nimhttpd.svg)
 
-# NimHTTPd
+# static_server
 
-_NimHTTPd_ is a minimal web server that can be used to serve static files.
+_static_server_ is a minimal web server that can be used to serve static files.
 
 ## Usage
 
-**nimhttpd** **[** **-p:**_port_ **]** **[** _directory_ **]**
+**static_server** **[** **-p:**_port_ **]** **[** _directory_ **]**
 
 Where:
 
