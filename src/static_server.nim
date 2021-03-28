@@ -12,7 +12,7 @@ import
 from httpcore import HttpMethod, HttpHeaders
 
 import
-  static_serverpkg/config
+  static_server/config
 
 
 const 
