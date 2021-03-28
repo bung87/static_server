@@ -10,7 +10,6 @@ else:
   # When the package is installed, the ``src`` directory disappears.
   import static_serverpkg/config
 
-
 # Package
 
 version       = pkgVersion

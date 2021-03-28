@@ -1,7 +1,7 @@
-[![Nimble](https://raw.githubusercontent.com/yglukhov/nimble-tag/master/nimble.png)](https://github.com/bung87/nimhttpd)
+[![Nimble](https://raw.githubusercontent.com/yglukhov/nimble-tag/master/nimble.png)](https://github.com/bung87/static_server)
 
-![release](https://img.shields.io/github/release/bung87/nimhttpd/all.svg)
-![license](https://img.shields.io/github/license/bung87/nimhttpd.svg)
+![release](https://img.shields.io/github/release/bung87/static_server/all.svg)
+![license](https://img.shields.io/github/license/bung87/static_server.svg)
 
 # static_server
 
