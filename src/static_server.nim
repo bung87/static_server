@@ -11,19 +11,12 @@ import
 
 from httpcore import HttpMethod, HttpHeaders
 
-import
-  static_server/config
-
-
 const 
-  name = pkgTitle
-  version = pkgVersion
+  name = "static_server"
   style = "style.css".slurp
-  description = pkgDescription
-  author = pkgAuthor
 
-let usage = """ $1 v$2 - $3
-  (c) 2014-2018 $4
+let usage = """ $1
+  (c) 2014-2018 
 
   Usage:
     static_server [-p:port] [directory]
@@ -34,7 +27,7 @@ let usage = """ $1 v$2 - $3
   Options:
     -p, --port     The port to listen to (default: 1337).
     -a, --address  The address to listen to (default: 127.0.0.1).
-""" % [name, version, description, author]
+""" % [name]
 import finder
 
 type 
@@ -52,7 +45,7 @@ type
     version*: string
 
 proc h_page(settings:NimHttpSettings, content: string, title=""): string =
-  var footer = """<div id="footer">$1 v$2</div>""" % [settings.name, settings.version]
+  var footer = """<div id="footer">$1 </div>""" % [settings.name]
   result = """
 <!DOCTYPE html>
 <html>
@@ -76,7 +69,7 @@ proc relativePath(path, cwd: string): string =
   else:
     path2.delete(0, cwd.len-1)
   var relpath = path2.replace("\\", "/")
-  if (not relpath.endsWith("/")) and (not path.existsFile):
+  if (not relpath.endsWith("/")) and (not path.fileExists):
     relpath = relpath&"/"
   if not relpath.startsWith("/"):
     relpath = "/"&relpath
@@ -150,9 +143,6 @@ when isMainModule:
       of "help", "h":
         echo usage
         quit(0)
-      of "version", "v":
-        echo version
-        quit(0)
       of "address", "a":
         address = val
       of "port", "p":
@@ -173,7 +163,7 @@ when isMainModule:
         dir = key
       else:
         dir = www/key
-      if dir.existsDir:
+      if dir.dirExists:
         www = expandFilename dir
       else:
         echo "Error: Directory '"&dir&"' does not exist."
@@ -189,7 +179,6 @@ when isMainModule:
   settings.mimes.register("htm", "text/html")
   settings.address = address
   settings.name = name
-  settings.version = version
   settings.port = port
 
   serve(settings)

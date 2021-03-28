@@ -1,20 +1,9 @@
 import
   ospaths
-
-template thisModuleFile: string = instantiationInfo(fullPaths = true).filename
-
-when fileExists(thisModuleFile.parentDir / "src/static_server/config.nim"):
-  # In the git repository the Nimble sources are in a ``src`` directory.
-  import src/static_server/config
-else:
-  # When the package is installed, the ``src`` directory disappears.
-  import static_server/config
-
 # Package
-
-version       = pkgVersion
-author        = pkgAuthor
-description   = pkgDescription
+version       = "2.0.2"
+author        = "bung"
+description   = "A tiny static file web server."
 license       = "MIT"
 bin           = @["static_server"]
 srcDir        = "src"
