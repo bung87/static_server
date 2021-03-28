@@ -3,12 +3,12 @@ import
 
 template thisModuleFile: string = instantiationInfo(fullPaths = true).filename
 
-when fileExists(thisModuleFile.parentDir / "src/static_serverpkg/config.nim"):
+when fileExists(thisModuleFile.parentDir / "src/static_server/config.nim"):
   # In the git repository the Nimble sources are in a ``src`` directory.
-  import src/static_serverpkg/config
+  import src/static_server/config
 else:
   # When the package is installed, the ``src`` directory disappears.
-  import static_serverpkg/config
+  import static_server/config
 
 # Package
 
