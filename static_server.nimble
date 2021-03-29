@@ -1,7 +1,7 @@
 import
   ospaths
 # Package
-version       = "2.0.2"
+version       = "2.0.3"
 author        = "bung"
 description   = "A tiny static file web server."
 license       = "MIT"
@@ -12,7 +12,7 @@ installExt    = @["nim","css"]
 # Dependencies
 
 requires "nim >= 1.2.0"
-requires "https://github.com/bung87/finder"
+requires "https://github.com/bung87/finder >= 0.1.1"
 
 const compile = "nim c -d:release"
 const linux_x64 = "--cpu:amd64 --os:linux -o:static_server"
