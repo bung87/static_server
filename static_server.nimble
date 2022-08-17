@@ -1,7 +1,7 @@
 import
   ospaths
 # Package
-version       = "2.2.0"
+version       = "2.2.1"
 author        = "bung"
 description   = "A tiny static file web server."
 license       = "MIT"
